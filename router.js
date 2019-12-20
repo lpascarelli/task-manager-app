@@ -17,10 +17,10 @@ router.patch("/users/me", auth, userController.update)
 router.delete("/users/me", auth, userController.delete)
 
 // Task routes
-router.get("/tasks", taskController.all)
-router.get("/tasks/:id", taskController.get)
-router.post("/tasks", taskController.create)
-router.patch("/tasks/:id", taskController.update)
-router.delete("/tasks/:id", taskController.delete)
+router.get("/tasks", auth, taskController.all)
+router.get("/tasks/:id", auth, taskController.get)
+router.post("/tasks", auth, taskController.create)
+router.patch("/tasks/:id", auth, taskController.update)
+router.delete("/tasks/:id", auth, taskController.delete)
 
 module.exports = router
