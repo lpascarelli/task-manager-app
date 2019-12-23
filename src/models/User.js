@@ -46,6 +46,9 @@ const userSchema = new mongoose.Schema(
                 }
             }
         },
+        avatar: {
+            type: Buffer
+        },
         tokens: [
             {
                 token: {
@@ -95,6 +98,7 @@ userSchema.methods.toJSON = function() {
 
     delete user.password
     delete user.tokens
+    delete user.avatar
 
     return user
 }

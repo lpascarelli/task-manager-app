@@ -1,5 +1,6 @@
 const { User, allowedUpdates } = require("../models/User")
-const { isValidUpdate } = require("../helpers/utils")
+const utils = require("../helpers/utils")
+const sharp = require("sharp")
 
 exports.create = async (req, res) => {
     const user = new User(req.body)
@@ -32,7 +33,7 @@ exports.profile = async (req, res) => {
 
 exports.update = async (req, res) => {
     const updates = Object.keys(req.body)
-    const isValid = isValidUpdate(allowedUpdates, updates)
+    const isValid = utils.isValidUpdate(allowedUpdates, updates)
 
     if (!isValid) {
         return res.status(400).send({ error: "Invalid Updates!" })
@@ -94,4 +95,37 @@ exports.logoutAll = async (req, res) => {
     } catch (error) {
         res.status(500).send()
     }
+}
+
+exports.avatar = async (req, res) => {
+    const buffer = await sharp(req.file.buffer)
+        .resize({ width: 250, height: 250 })
+        .png()
+        .toBuffer()
+    req.user.avatar = buffer
+    await req.user.save()
+
+    res.send()
+}
+
+exports.getAvatar = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user || !user.avatar) {
+            throw new Error()
+        }
+        res.set("Content-Type", "image/png")
+
+        res.send(user.avatar)
+    } catch (error) {
+        res.status(404).send()
+    }
+}
+
+exports.deleteAvatar = async (req, res) => {
+    req.user.avatar = undefined
+    await req.user.save()
+
+    res.send()
 }
