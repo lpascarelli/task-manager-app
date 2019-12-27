@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const sgMail = require("@sendgrid/mail")
 require("dotenv").config()
 
 const app = require("./app")
@@ -11,12 +12,15 @@ mongoose.connect(
         useCreateIndex: true
     }
 )
-mongoose.Promise = global.Promise
 
 mongoose.connection.on("error", error => {
     console.log(error.message)
 })
 
+// set API key for handling emails
+sgMail.setApiKey(process.env.SENDGRID_KEY)
+
+// Start server!!!
 app.listen(process.env.PORT, () => {
     console.log(`Task app is running on PORT: ${process.env.PORT}`)
 })

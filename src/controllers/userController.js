@@ -1,12 +1,15 @@
+const sharp = require("sharp")
+
 const { User, allowedUpdates } = require("../models/User")
 const utils = require("../helpers/utils")
-const sharp = require("sharp")
+const { welcome, cancellation } = require("../handlers/email")
 
 exports.create = async (req, res) => {
     const user = new User(req.body)
 
     try {
         await user.save()
+        welcome(user.email, user.name)
         const token = await user.generateAuthToken()
         res.status(201).send({ user, token })
     } catch (error) {
@@ -52,6 +55,7 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         await req.user.remove()
+        cancellation(req.user.email, req.user.name)
 
         res.send(req.user)
     } catch (error) {
